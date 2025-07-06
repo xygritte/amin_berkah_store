@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Panel - Simple Store</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -11,114 +11,32 @@
     <h1>Admin Panel</h1>
     <div>
       <a href="user.html" class="view-link">👁️ Lihat Toko</a>
-      <button id="toggle-theme" style="font-size: 1.2rem; margin-left: 1rem;">🌓</button>
+      <button id="toggle-theme">🌓</button>
     </div>
   </header>
 
   <main>
-    <!-- Form Tambah/Edit Produk -->
     <section class="admin-panel">
       <h2>Tambah / Edit Produk</h2>
-      <form id="product-form" enctype="multipart/form-data">
+      <form id="product-form">
         <input type="text" name="name" id="product-name" placeholder="Nama Produk" required />
         <input type="number" name="price" id="product-price" placeholder="Harga" step="1000" required />
-        <input type="file" name="image" id="product-image" accept="image/*" />
+        <input type="text" name="image" id="product-image" placeholder="Path Gambar (ex: images/baju.jpg)" required />
         <button type="submit">Tambah Produk</button>
       </form>
     </section>
 
-    <!-- Daftar Produk -->
     <h2>Daftar Produk</h2>
-    <div class="products" id="product-list">
-      <!-- Produk akan ditampilkan oleh script.js -->
-    </div>
+    <div class="products" id="product-list"></div>
   </main>
 
   <footer>
     <p>&copy; 2025 Simple Store</p>
   </footer>
 
-  <!-- SCRIPT UTAMA ADMIN -->
   <script>
     const productList = document.getElementById("product-list");
     const form = document.getElementById("product-form");
-
-    function renderProducts() {
-      fetch("get_products.php")
-        .then(res => res.json())
-        .then(products => {
-          productList.innerHTML = "";
-          products.forEach(product => {
-            const card = document.createElement("div");
-            card.className = "product-card";
-
-            card.innerHTML = `
-              <img src="${product.image}" alt="${product.name}" />
-              <h3>${product.name}</h3>
-              <p>${formatRupiah(product.price)}</p>
-              <button onclick="showEditForm(${product.id}, '${product.name}', ${product.price})">Edit</button>
-              <button onclick="deleteProduct(${product.id})" style="margin-top: 0.5rem; background: #c0392b;">Hapus</button>
-            `;
-
-            productList.appendChild(card);
-          });
-        });
-    }
-
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const formData = new FormData(form);
-      const isEdit = form.querySelector("#product-id");
-      const endpoint = isEdit ? "update_product.php" : "add_product.php";
-
-      fetch(endpoint, {
-        method: "POST",
-        body: formData
-      })
-        .then(res => res.text())
-        .then(msg => {
-          alert(msg);
-          form.reset();
-          renderProducts();
-
-          // Reset form ke mode tambah
-          form.querySelector("button[type='submit']").textContent = "Tambah Produk";
-          form.querySelector("#product-id")?.remove();
-        });
-    });
-
-    function deleteProduct(id) {
-      if (!confirm("Yakin ingin menghapus produk ini?")) return;
-
-      const formData = new FormData();
-      formData.append("id", id);
-
-      fetch("delete_product.php", {
-        method: "POST",
-        body: formData
-      })
-        .then(res => res.text())
-        .then(msg => {
-          alert(msg);
-          renderProducts();
-        });
-    }
-
-    function showEditForm(id, name, price) {
-      document.getElementById("product-name").value = name;
-      document.getElementById("product-price").value = price;
-      document.getElementById("product-id")?.remove();
-
-      const hiddenInput = document.createElement("input");
-      hiddenInput.type = "hidden";
-      hiddenInput.id = "product-id";
-      hiddenInput.name = "id";
-      hiddenInput.value = id;
-      form.appendChild(hiddenInput);
-
-      form.querySelector("button[type='submit']").textContent = "Update Produk";
-    }
 
     function formatRupiah(angka) {
       return new Intl.NumberFormat("id-ID", {
@@ -128,15 +46,38 @@
       }).format(angka);
     }
 
+    function renderProducts() {
+      fetch("produk.json")
+        .then(res => res.json())
+        .then(products => {
+          productList.innerHTML = "";
+          products.forEach(product => {
+            const card = document.createElement("div");
+            card.className = "product-card";
+            card.innerHTML = `
+              <img src="${product.image}" alt="${product.name}" />
+              <h3>${product.name}</h3>
+              <p>${formatRupiah(product.price)}</p>
+            `;
+            productList.appendChild(card);
+          });
+        })
+        .catch(error => {
+          productList.innerHTML = "<p>Gagal memuat produk.</p>";
+          console.error("Error:", error);
+        });
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      alert("Form hanya untuk dummy input. Tambah data langsung di produk.json atau gunakan editor lokal.");
+    });
+
     renderProducts();
-  </script>
 
-  <!-- Dark Mode -->
-  <script>
+    // Dark Mode Toggle
     if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
-
-    const toggleBtn = document.getElementById("toggle-theme");
-    toggleBtn?.addEventListener("click", () => {
+    document.getElementById("toggle-theme").addEventListener("click", () => {
       document.body.classList.toggle("dark");
       const theme = document.body.classList.contains("dark") ? "dark" : "light";
       localStorage.setItem("theme", theme);
