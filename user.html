@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Halaman Customer - Simple Store</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Simple Store - Pelanggan</h1>
+    <div>
+      <a href="checkout.html" class="view-link">Lihat Checkout</a>
+      <span class="cart">🛒 <span id="cart-count">0</span></span>
+      <button id="toggle-theme" style="font-size: 1.2rem; margin-left: 1rem;">🌓</button>
+    </div>
+  </header>
+
+  <main>
+    <h2>Produk Tersedia</h2>
+    <div class="products" id="product-list">
+      <!-- Produk akan ditampilkan lewat JS -->
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Simple Store</p>
+  </footer>
+
+  <script src="user-script.js"></script>
+
+  <!-- SCRIPT DARK MODE -->
+  <script>
+    // Terapkan tema dari localStorage saat halaman dimuat
+    const isDark = localStorage.getItem("theme") === "dark";
+    if (isDark) document.body.classList.add("dark");
+
+    // Toggle tema
+    const toggleBtn = document.getElementById("toggle-theme");
+    if (toggleBtn) {
+      toggleBtn.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+        const theme = document.body.classList.contains("dark") ? "dark" : "light";
+        localStorage.setItem("theme", theme);
+      });
+    }
+  </script>
+</body>
+</html>

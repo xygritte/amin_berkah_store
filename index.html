@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel - Simple Store</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <script>
+  if (sessionStorage.getItem("admin_access") !== "true") {
+    window.location.href = "login.html";
+  }
+</script>
+
+  <header>
+    <h1>Admin Panel</h1>
+    <div>
+      <a href="user.html" class="view-link" title="Lihat Halaman Customer">👁️</a>
+      <button id="toggle-theme" style="font-size: 1.2rem; margin-left: 1rem;">🌓</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Admin Form -->
+    <section class="admin-panel">
+      <h2>Tambah Produk (Admin)</h2>
+      <form id="product-form" enctype="multipart/form-data">
+        <input type="text" id="product-name" placeholder="Nama Produk" required />
+        <input type="number" id="product-price" placeholder="Harga" step="0.01" required />
+        <input type="file" id="product-image" name="product-image" accept="image/*" />
+        <button type="submit">Tambah Produk</button>
+      </form>
+    </section>
+
+    <!-- Produk -->
+    <h2>Daftar Produk</h2>
+    <div class="products" id="product-list"></div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Simple Store</p>
+  </footer>
+
+  <script src="script.js"></script>
+
+  <!-- DARK MODE SCRIPT -->
+  <script>
+    const isDark = localStorage.getItem("theme") === "dark";
+    if (isDark) document.body.classList.add("dark");
+
+    const toggleBtn = document.getElementById("toggle-theme");
+    if (toggleBtn) {
+      toggleBtn.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+        const theme = document.body.classList.contains("dark") ? "dark" : "light";
+        localStorage.setItem("theme", theme);
+      });
+    }
+  </script>
+</body>
+</html>

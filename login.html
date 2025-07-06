@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login Admin</title>
+
+  <!-- stylesheet global toko -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- STYLE khusus halaman login -->
+  <style>
+    /* kotak login */
+    .login-box{
+      max-width:400px;
+      margin:5rem auto;
+      background:#fff;
+      padding:2rem;
+      border-radius:12px;
+      box-shadow:0 2px 10px rgba(0,0,0,.15);
+    }
+    body.dark .login-box{
+      background:#2c2c2c;color:#fff;box-shadow:none;
+    }
+
+    /* header kecil ikon */
+    .login-header{
+        text-align: center;
+        justify-content:space-between;
+        align-items:center;margin-bottom:2rem;}
+        
+    .view-link,.theme-toggle{
+      font-size:1.5rem;
+      text-decoration:none;
+      color:inherit;
+      background:none;
+      border:none;
+      cursor:pointer;
+    }
+
+    /* input & button */
+    .login-box input,.login-box button{
+      width:100%;padding:.75rem;margin-top:1rem;
+      border-radius:6px;font-size:1rem;
+    }
+    .login-box input{border:1px solid #ccc;}
+    body.dark .login-box input{background:#333;border-color:#555;color:#fff;}
+    body.dark input::placeholder{color:#bbb;}
+    .login-box button{background:#111;color:#fff;border:none;cursor:pointer;}
+    .login-box button:hover{background:#333;}
+
+    /* --- animasi shake --- */
+    @keyframes shake{
+      0%,100%{transform:translateX(0);}
+      25%{transform:translateX(-6px);}
+      50%{transform:translateX(6px);}
+      75%{transform:translateX(-6px);}
+    }
+    .shake{animation:shake .4s ease;}
+  </style>
+</head>
+
+<body>
+  <main class="login-box">
+    <!-- ikon header -->
+    <div class="login-header">
+      <a href="user.html" class="view-link" title="Halaman Customer">👁️</a>
+      <button id="toggle-theme" class="theme-toggle" title="Toggle Tema">🌓</button>
+    </div>
+
+    <h2>Masuk sebagai Admin</h2>
+
+    <input type="password" id="admin-code" placeholder="Masukkan kode admin" />
+    <button id="login-btn">Masuk</button>
+  </main>
+
+  <!-- SCRIPT -->
+  <script>
+    /* ---------------- Dark-mode ---------------- */
+    if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
+
+    document.getElementById("toggle-theme").addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+    });
+
+    /* ---------------- Login admin ---------------- */
+    const loginBtn   = document.getElementById("login-btn");
+    const inputCode  = document.getElementById("admin-code");
+    const loginBox   = document.querySelector(".login-box");
+    const kodeBenar  = "1234admin";            // ⇦ ganti di sini jika perlu
+
+    loginBtn.addEventListener("click", loginAdmin);
+    inputCode.addEventListener("keyup", e => { if (e.key === "Enter") loginAdmin(); });
+
+    function loginAdmin(){
+      const kode = inputCode.value.trim();
+      if (kode === kodeBenar){
+        sessionStorage.setItem("admin_access","true");   // izinkan hanya di sesi ini
+        window.location.href = "index.html";
+      }else{
+        /* animasi shake */
+        loginBox.classList.add("shake");
+        setTimeout(()=> loginBox.classList.remove("shake"), 400);
+        inputCode.value = "";
+        inputCode.focus();
+      }
+    }
+  </script>
+</body>
+</html>
