@@ -1,32 +1,27 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "simple_store";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $file = 'produk.json';
+  $produk = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
 
-$conn = new mysqli($host, $user, $pass, $db);
-if ($conn->connect_error) {
-  die("Koneksi gagal: " . $conn->connect_error);
+  $name = $_POST['name'];
+  $price = floatval($_POST['price']);
+
+  // handle upload
+  $imageName = $_FILES['image']['name'];
+  $uploadDir = 'uploads/';
+  if (!is_dir($uploadDir)) mkdir($uploadDir);
+  $imagePath = $uploadDir . basename($imageName);
+  move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
+
+  $newId = count($produk) > 0 ? max(array_column($produk, 'id')) + 1 : 1;
+
+  $produk[] = [
+    'id' => $newId,
+    'name' => $name,
+    'price' => $price,
+    'image' => $imagePath
+  ];
+
+  file_put_contents($file, json_encode($produk, JSON_PRETTY_PRINT));
+  echo "Produk berhasil ditambahkan.";
 }
-
-$name  = $_POST['name'];
-$price = $_POST['price'];
-
-// Simpan file gambar
-$targetDir = "uploads/";
-$filename = time() . '_' . basename($_FILES["image"]["name"]);
-$targetFile = $targetDir . $filename;
-
-if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-  $imagePath = $targetFile;
-
-  $sql = "INSERT INTO products (name, price, image) VALUES (?, ?, ?)";
-  $stmt = $conn->prepare($sql);
-  $stmt->bind_param("sds", $name, $price, $imagePath);
-  $stmt->execute();
-
-  echo "Produk berhasil ditambahkan!";
-} else {
-  echo "Gagal mengunggah gambar.";
-}
-?>

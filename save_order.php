@@ -1,30 +1,16 @@
 <?php
-// Koneksi database
-$conn = new mysqli("localhost", "root", "", "simple_store"); // Ganti sesuai config Anda
-
-if ($conn->connect_error) {
-  http_response_code(500);
-  echo "Koneksi gagal.";
-  exit;
-}
-
-// Ambil dan decode JSON dari frontend
 $data = json_decode(file_get_contents("php://input"), true);
+$ordersFile = 'orders.json';
 
-$name = $conn->real_escape_string($data['name']);
-$address = $conn->real_escape_string($data['address']);
-$items = json_encode($data['items']); // array keranjang
-$total = $data['total'];
+$orders = file_exists($ordersFile) ? json_decode(file_get_contents($ordersFile), true) : [];
 
-$sql = "INSERT INTO orders (name, address, items, total, created_at) 
-        VALUES ('$name', '$address', '$items', $total, NOW())";
+$orders[] = [
+  'name' => $data['name'],
+  'address' => $data['address'],
+  'items' => $data['items'],
+  'total' => $data['total'],
+  'created_at' => date('Y-m-d H:i:s')
+];
 
-if ($conn->query($sql)) {
-  echo "Pesanan disimpan.";
-} else {
-  http_response_code(500);
-  echo "Gagal menyimpan pesanan.";
-}
-
-$conn->close();
-?>
+file_put_contents($ordersFile, json_encode($orders, JSON_PRETTY_PRINT));
+echo "Pesanan disimpan.";

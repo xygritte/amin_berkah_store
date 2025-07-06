@@ -1,128 +1,116 @@
-let cartCount = 0;
-let editingId = null;
-
 const productList = document.getElementById("product-list");
-const cartCountEl = document.getElementById("cart-count");
 const form = document.getElementById("product-form");
 
-// Ambil dan tampilkan produk dari database
+// Tampilkan produk dari produk.json
 function renderProducts() {
   fetch("get_products.php")
     .then(res => res.json())
     .then(products => {
       productList.innerHTML = "";
-      products.forEach((product) => {
+      products.forEach(product => {
         const card = document.createElement("div");
         card.className = "product-card";
 
         card.innerHTML = `
           <img src="${product.image}" alt="${product.name}" />
           <h3>${product.name}</h3>
-          <p>Rp ${parseFloat(product.price)}K</p>
-          <div style="margin-top: auto; display: flex; gap: 0.5rem;">
-            <button onclick="editProduct(${product.id}, '${product.name}', ${product.price}, '${product.image}')">Edit</button>
-            <button onclick="deleteProduct(${product.id})" style="background-color: crimson;">🗑️</button>
-          </div>
+          <p>${formatRupiah(product.price)}</p>
+          <button onclick="showEditForm(${product.id}, '${product.name}', ${product.price})">Edit</button>
+          <button onclick="deleteProduct(${product.id})" style="margin-top: 0.5rem; background: #c0392b;">Hapus</button>
         `;
-
 
         productList.appendChild(card);
       });
     })
-    .catch(error => {
-      console.error("Gagal mengambil produk:", error);
+    .catch(err => {
+      console.error("Gagal memuat produk:", err);
     });
 }
 
-function editProduct(id, name, price, image) {
-  editingId = id;
-  document.getElementById("product-name").value = name;
-  document.getElementById("product-price").value = price;
-  document.getElementById("product-image").value = image;
-}
-
-
-
-// Tambah ke keranjang (simulasi)
-function addToCart(name) {
-  cartCount++;
-  cartCountEl.textContent = cartCount;
-  alert(`Produk "${name}" ditambahkan ke keranjang.`);
-}
-
-// Tangani form tambah produk (kirim ke database)
+// Tambah produk
 form.addEventListener("submit", function (e) {
   e.preventDefault();
 
-  const name = document.getElementById("product-name").value;
-  const price = document.getElementById("product-price").value;
-  const imageFile = document.getElementById("product-image").files[0];
+  const formData = new FormData(form);
 
-  const formData = new FormData();
-  formData.append("name", name);
-  formData.append("price", price);
-  formData.append("image", imageFile);
-
-  if (editingId) {
-    formData.append("id", editingId);
-    fetch("update_product.php", {
-      method: "POST",
-      body: formData
-    })
-      .then(res => res.text())
-      .then(msg => {
-        alert(msg);
-        form.reset();
-        editingId = null;
-        renderProducts();
-      })
-      .catch(err => {
-        alert("Gagal mengedit produk.");
-        console.error(err);
-      });
-  } else {
-    fetch("add_product.php", {
-      method: "POST",
-      body: formData
-    })
-      .then(res => res.text())
-      .then(msg => {
-        alert(msg);
-        form.reset();
-        renderProducts();
-      })
-      .catch(err => {
-        alert("Gagal menambahkan produk.");
-        console.error(err);
-      });
-  }
+  fetch("add_product.php", {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.text())
+    .then(msg => {
+      alert(msg);
+      form.reset();
+      renderProducts();
+    });
 });
 
-
+// Hapus produk
 function deleteProduct(id) {
-  if (confirm("Yakin ingin menghapus produk ini?")) {
-    const formData = new FormData();
-    formData.append("id", id);
+  if (!confirm("Yakin ingin menghapus produk ini?")) return;
 
-    fetch("delete_product.php", {
-      method: "POST",
-      body: formData
-    })
-      .then(res => res.text())
-      .then(msg => {
-        alert(msg);
-        renderProducts();
-      })
-      .catch(err => {
-        alert("Gagal menghapus produk.");
-        console.error(err);
-      });
-  }
+  const formData = new FormData();
+  formData.append("id", id);
+
+  fetch("delete_product.php", {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.text())
+    .then(msg => {
+      alert(msg);
+      renderProducts();
+    });
 }
 
-  // Cek preferensi dari localStorage
-  
+// Tampilkan form edit (dari form yang sama)
+function showEditForm(id, name, price) {
+  document.getElementById("product-name").value = name;
+  document.getElementById("product-price").value = price;
+  document.getElementById("product-id")?.remove(); // hapus ID lama jika ada
 
+  const hiddenInput = document.createElement("input");
+  hiddenInput.type = "hidden";
+  hiddenInput.id = "product-id";
+  hiddenInput.name = "id";
+  hiddenInput.value = id;
+  form.appendChild(hiddenInput);
 
-// Jalankan saat halaman dimuat
+  const submitBtn = form.querySelector("button[type='submit']");
+  submitBtn.textContent = "Update Produk";
+}
+
+// Tambah/Update dikirim ke endpoint sesuai
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const formData = new FormData(form);
+  const isEdit = form.querySelector("#product-id");
+  const endpoint = isEdit ? "update_product.php" : "add_product.php";
+
+  fetch(endpoint, {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.text())
+    .then(msg => {
+      alert(msg);
+      form.reset();
+      renderProducts();
+
+      // Reset form ke mode tambah
+      form.querySelector("button[type='submit']").textContent = "Tambah Produk";
+      form.querySelector("#product-id")?.remove();
+    });
+});
+
+// Format harga ke rupiah
+function formatRupiah(angka) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0
+  }).format(angka);
+}
+
 renderProducts();

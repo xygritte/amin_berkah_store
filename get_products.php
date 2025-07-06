@@ -1,12 +1,9 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "simple_store");
+header("Content-Type: application/json");
 
-$result = $conn->query("SELECT * FROM products");
-
-$products = [];
-while ($row = $result->fetch_assoc()) {
-  $products[] = $row;
+$file = 'produk.json';
+if (file_exists($file)) {
+  echo file_get_contents($file);
+} else {
+  echo "[]";
 }
-
-echo json_encode($products);
-?>

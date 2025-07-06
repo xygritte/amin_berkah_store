@@ -1,12 +1,11 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "simple_store");
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $file = 'produk.json';
+  $id = intval($_POST['id']);
+  $produk = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
 
-$id = $_POST['id'];
+  $produk = array_filter($produk, fn($p) => $p['id'] != $id);
+  file_put_contents($file, json_encode(array_values($produk), JSON_PRETTY_PRINT));
 
-$sql = "DELETE FROM products WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-
-echo "Produk berhasil dihapus!";
-?>
+  echo "Produk berhasil dihapus.";
+}

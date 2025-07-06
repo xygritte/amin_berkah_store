@@ -1,34 +1,28 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "simple_store");
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $file = 'produk.json';
+  $id = intval($_POST['id']);
+  $name = $_POST['name'];
+  $price = floatval($_POST['price']);
 
-$id    = $_POST['id'];
-$name  = $_POST['name'];
-$price = $_POST['price'];
-$imagePath = "";
+  $produk = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
 
-// Cek apakah ada gambar baru yang diupload
-if (isset($_FILES["image"]) && $_FILES["image"]["size"] > 0) {
-  $targetDir = "uploads/";
-  $filename = time() . '_' . basename($_FILES["image"]["name"]);
-  $targetFile = $targetDir . $filename;
+  foreach ($produk as &$p) {
+    if ($p['id'] == $id) {
+      $p['name'] = $name;
+      $p['price'] = $price;
 
-  if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-    $imagePath = $targetFile;
-
-    // Jika ada gambar baru, update semua termasuk gambar
-    $sql = "UPDATE products SET name = ?, price = ?, image = ? WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sdsi", $name, $price, $imagePath, $id);
-  } else {
-    die("Gagal mengunggah gambar baru.");
+      if (!empty($_FILES['image']['name'])) {
+        $imageName = $_FILES['image']['name'];
+        $uploadDir = 'uploads/';
+        if (!is_dir($uploadDir)) mkdir($uploadDir);
+        $imagePath = $uploadDir . basename($imageName);
+        move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
+        $p['image'] = $imagePath;
+      }
+    }
   }
-} else {
-  // Jika tidak ada gambar baru, update hanya nama dan harga
-  $sql = "UPDATE products SET name = ?, price = ? WHERE id = ?";
-  $stmt = $conn->prepare($sql);
-  $stmt->bind_param("sdi", $name, $price, $id);
-}
 
-$stmt->execute();
-echo "Produk berhasil diperbarui!";
-?>
+  file_put_contents($file, json_encode($produk, JSON_PRETTY_PRINT));
+  echo "Produk berhasil diperbarui.";
+}
