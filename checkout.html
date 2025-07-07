@@ -62,7 +62,7 @@
         const subtotal = product.price * item.qty;
         total += subtotal;
         return `
-          <div class="checkout-item">
+          <div class=\"checkout-item\">
             <strong>${product.name}</strong>
             <p>Jumlah: ${item.qty}</p>
             <p>Harga Satuan: ${formatRupiah(product.price)}</p>
@@ -101,13 +101,15 @@
 
       const nomorAdmin = "6285858533923";
       const whatsappURL = `https://wa.me/${nomorAdmin}?text=${encodeURIComponent(message)}`;
+
       localStorage.removeItem("cart");
       window.open(whatsappURL, "_blank");
+      document.getElementById("cart-count")?.textContent = "0";
+      location.href = "user.html";
     });
 
     renderCheckout();
 
-    // DARK MODE
     if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
     document.getElementById("toggle-theme").addEventListener("click", () => {
       document.body.classList.toggle("dark");
