@@ -3,31 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel - Simple Store</title>
+  <title>Simple Store</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header>
-    <h1>Admin Panel</h1>
+    <h1>Simple Store</h1>
     <div>
-      <a href="user.html" class="view-link">👁️ Lihat Toko</a>
+      <a href="checkout.html" class="view-link">Lihat Checkout</a>
+      <span class="cart">🛒 <span id="cart-count">0</span></span>
       <button id="toggle-theme">🌓</button>
     </div>
   </header>
 
   <main>
-    <section class="admin-panel">
-      <h2>Tambah / Edit Produk</h2>
-      <form id="product-form">
-        <input type="text" name="name" id="product-name" placeholder="Nama Produk" required />
-        <input type="number" name="price" id="product-price" placeholder="Harga" step="1000" required />
-        <input type="text" name="image" id="product-image" placeholder="Path Gambar (ex: images/baju.jpg)" required />
-        <button type="submit">Tambah Produk</button>
-      </form>
-    </section>
-
-    <h2>Daftar Produk</h2>
+    <h2>Produk Tersedia</h2>
     <div class="products" id="product-list"></div>
+    <button onclick="resetCart()" class="reset-cart-btn">🗑 Kosongkan Keranjang</button>
   </main>
 
   <footer>
@@ -36,46 +28,58 @@
 
   <script>
     const productList = document.getElementById("product-list");
-    const form = document.getElementById("product-form");
+    const cartCount = document.getElementById("cart-count");
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    function updateCartCount() {
+      const total = cart.reduce((sum, item) => sum + item.qty, 0);
+      cartCount.textContent = total;
+    }
+
+    function addToCart(id) {
+      const existing = cart.find(item => item.id === id);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ id, qty: 1 });
+      }
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCartCount();
+    }
+
+    function resetCart() {
+      cart = [];
+      localStorage.removeItem("cart");
+      updateCartCount();
+      alert("Keranjang dikosongkan.");
+    }
 
     function formatRupiah(angka) {
       return new Intl.NumberFormat("id-ID", {
         style: "currency",
-        currency: "IDR",
-        minimumFractionDigits: 0
+        currency: "IDR"
       }).format(angka);
     }
 
-    function renderProducts() {
-      fetch("produk.json")
-        .then(res => res.json())
-        .then(products => {
-          productList.innerHTML = "";
-          products.forEach(product => {
-            const card = document.createElement("div");
-            card.className = "product-card";
-            card.innerHTML = `
-              <img src="${product.image}" alt="${product.name}" />
-              <h3>${product.name}</h3>
-              <p>${formatRupiah(product.price)}</p>
-            `;
-            productList.appendChild(card);
-          });
-        })
-        .catch(error => {
-          productList.innerHTML = "<p>Gagal memuat produk.</p>";
-          console.error("Error:", error);
+    fetch("produk.json")
+      .then(res => res.json())
+      .then(products => {
+        productList.innerHTML = "";
+        products.forEach(product => {
+          const div = document.createElement("div");
+          div.className = "product-card";
+          div.innerHTML = `
+            <img src="${product.image}" alt="${product.name}">
+            <h3>${product.name}</h3>
+            <p>${formatRupiah(product.price)}</p>
+            <button onclick="addToCart(${product.id})">Tambah ke Keranjang</button>
+          `;
+          productList.appendChild(div);
         });
-    }
+      });
 
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      alert("Form hanya untuk dummy input. Tambah data langsung di produk.json atau gunakan editor lokal.");
-    });
+    updateCartCount();
 
-    renderProducts();
-
-    // Dark Mode Toggle
     if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
     document.getElementById("toggle-theme").addEventListener("click", () => {
       document.body.classList.toggle("dark");

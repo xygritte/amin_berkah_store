@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Checkout - Simple Store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -21,7 +21,6 @@
       <input type="text" id="buyer-name" placeholder="Nama Anda" required />
       <textarea id="buyer-address" placeholder="Alamat Lengkap" required></textarea>
     </div>
-
     <div id="checkout-list"></div>
     <div id="total-harga" class="checkout-summary"></div>
     <button id="checkout-btn">Checkout</button>
@@ -35,77 +34,60 @@
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const checkoutList = document.getElementById("checkout-list");
     const totalHargaEl = document.getElementById("total-harga");
-    const checkoutBtn = document.getElementById("checkout-btn");
 
     function formatRupiah(angka) {
       return new Intl.NumberFormat("id-ID", {
         style: "currency",
-        currency: "IDR",
-        minimumFractionDigits: 0
+        currency: "IDR"
       }).format(angka);
     }
 
     async function renderCheckout() {
       if (cart.length === 0) {
         checkoutList.innerHTML = "<p>Keranjang kosong.</p>";
-        checkoutBtn.style.display = "none";
-        totalHargaEl.textContent = "";
+        document.getElementById("checkout-btn").style.display = "none";
         return;
       }
 
       const products = await fetch("produk.json").then(res => res.json());
       let total = 0;
-
-      const listItems = cart.map(item => {
-        const product = products.find(p => p.id == item.id);
-        if (!product) return `<div class='checkout-item'>Produk tidak ditemukan</div>`;
+      const list = cart.map(item => {
+        const product = products.find(p => p.id === item.id);
+        if (!product) return '';
         const subtotal = product.price * item.qty;
         total += subtotal;
         return `
-          <div class=\"checkout-item\">
+          <div class="checkout-item">
             <strong>${product.name}</strong>
             <p>Jumlah: ${item.qty}</p>
-            <p>Harga Satuan: ${formatRupiah(product.price)}</p>
             <p>Subtotal: ${formatRupiah(subtotal)}</p>
           </div>
         `;
       });
-
-      checkoutList.innerHTML = listItems.join("");
-      totalHargaEl.textContent = `Total Belanja: ${formatRupiah(total)}`;
+      checkoutList.innerHTML = list.join("");
+      totalHargaEl.textContent = `Total: ${formatRupiah(total)}`;
     }
 
-    checkoutBtn.addEventListener("click", async () => {
+    document.getElementById("checkout-btn").addEventListener("click", async () => {
       const name = document.getElementById("buyer-name").value.trim();
       const address = document.getElementById("buyer-address").value.trim();
-      if (!name || !address) {
-        alert("Harap isi nama dan alamat.");
-        return;
-      }
+      if (!name || !address) return alert("Lengkapi data terlebih dahulu.");
 
       const products = await fetch("produk.json").then(res => res.json());
-      let total = 0;
       let message = `Halo Admin, saya ingin memesan:\n\n`;
-
+      let total = 0;
       cart.forEach(item => {
-        const product = products.find(p => p.id == item.id);
+        const product = products.find(p => p.id === item.id);
         if (product) {
           const subtotal = product.price * item.qty;
           total += subtotal;
           message += `- ${product.name} (${item.qty}x)\n`;
         }
       });
-
-      message += `\nTotal: ${formatRupiah(total)}\n\n`;
-      message += `Nama: ${name}\nAlamat: ${address}\n\nTerima kasih.`;
-
-      const nomorAdmin = "6285858533923";
-      const whatsappURL = `https://wa.me/${nomorAdmin}?text=${encodeURIComponent(message)}`;
+      message += `\nTotal: ${formatRupiah(total)}\n\nNama: ${name}\nAlamat: ${address}`;
 
       localStorage.removeItem("cart");
-      window.open(whatsappURL, "_blank");
-      document.getElementById("cart-count")?.textContent = "0";
-      location.href = "user.html";
+      window.location.href = `https://wa.me/6285858533923?text=${encodeURIComponent(message)}`;
     });
 
     renderCheckout();
