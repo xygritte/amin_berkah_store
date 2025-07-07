@@ -225,3 +225,72 @@ body.dark #checkout-btn {
 body.dark #checkout-btn:hover {
   background-color: #666;
 }
+
+/* Tombol Reset Keranjang & Umum */
+button,
+.reset-cart-btn {
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.reset-cart-btn {
+  background-color: #e74c3c;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  display: block;
+  margin: 2rem auto 0 auto;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.reset-cart-btn:hover {
+  background-color: #c0392b;
+  transform: scale(1.03);
+}
+
+/* Badge Cart */
+.cart {
+  position: relative;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.cart #cart-count {
+  background: crimson;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.2em 0.5em;
+  border-radius: 999px;
+  position: absolute;
+  top: -10px;
+  right: -12px;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Typography Responsif */
+h1, h2, h3 {
+  line-height: 1.3;
+}
+
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .products {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-form input,
+  .checkout-form textarea {
+    width: 100%;
+  }
+}
+
