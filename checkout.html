@@ -84,10 +84,10 @@
           message += `- ${product.name} (${item.qty}x)\n`;
         }
       });
-      message += `\nTotal: ${formatRupiah(total)}\n\nNama: ${name}\nAlamat: ${address}`;
+      message += `\nTotal: ${formatRupiah(total)}\n\nNama: ${name}\nAlamat: ${address}\n\nTerima kasih!😇🙏`;
 
       localStorage.removeItem("cart");
-      window.location.href = `https://wa.me/6285858533923?text=${encodeURIComponent(message)}`;
+      window.location.href = `https://wa.me/6282233073165?text=${encodeURIComponent(message)}`;
     });
 
     renderCheckout();
