@@ -46,6 +46,7 @@ header h1 {
   font-size: 1.2rem;
   font-weight: bold;
   position: relative;
+  color: white;
 }
 
 .cart #cart-count {
@@ -65,6 +66,7 @@ main {
   padding: 2rem;
   max-width: 1200px;
   margin: auto;
+  color: inherit;
 }
 
 /* === Produk === */
@@ -82,6 +84,7 @@ main {
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
+  color: #333;
 }
 
 .product-card:hover {
@@ -97,7 +100,7 @@ main {
 .product-card h3 {
   margin: 0.75rem 0 0.25rem 0;
   font-size: 1.2rem;
-  color: #222;
+  color: inherit;
 }
 
 .product-card p {
@@ -135,6 +138,8 @@ main {
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
+  background: #fff;
+  color: #000;
 }
 
 .checkout-item {
@@ -143,12 +148,14 @@ main {
   border-radius: 8px;
   margin-bottom: 1.5rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  color: #333;
 }
 
 .checkout-item strong {
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
   display: block;
+  color: inherit;
 }
 
 .checkout-item p {
@@ -161,6 +168,7 @@ main {
   font-weight: bold;
   text-align: right;
   margin-top: 2rem;
+  color: inherit;
 }
 
 #checkout-btn,
@@ -213,8 +221,13 @@ body.dark .admin-panel,
 body.dark .product-card,
 body.dark .checkout-item {
   background: #2c2c2c;
-  color: #fff;
+  color: #eee;
   box-shadow: none;
+}
+
+body.dark .product-card p,
+body.dark .checkout-item p {
+  color: #ccc;
 }
 
 body.dark footer {
@@ -228,6 +241,11 @@ body.dark button {
   background-color: #333;
   color: white;
   border-color: #555;
+}
+
+body.dark input::placeholder,
+body.dark textarea::placeholder {
+  color: #aaa;
 }
 
 body.dark #checkout-btn,
