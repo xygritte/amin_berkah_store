@@ -18,8 +18,8 @@
   <main>
     <h2>Daftar Belanja</h2>
     <div class="checkout-form">
-      <input type="text" id="buyer-name" placeholder="Nama Anda" required />
-      <textarea id="buyer-address" placeholder="Alamat Lengkap" required></textarea>
+      <input type="text" id="buyer-name" placeholder="Nama" required />
+      <textarea id="buyer-address" placeholder="Posisi" required></textarea>
     </div>
     <div id="checkout-list"></div>
     <div id="total-harga" class="checkout-summary"></div>
@@ -96,7 +96,7 @@
       }
     });
 
-    message += `\nTotal: ${formatRupiah(total)}\n\nNama: ${name}\nAlamat: ${address}\n\nTerima kasih!😇🙏`;
+    message += `\nTotal: ${formatRupiah(total)}\n\nNama: ${name}\nPosisi: ${address}\n\nTerima kasih!😇🙏`;
 
     console.log("message:", message); // Debug
 
