@@ -1,20 +1,20 @@
 [
   {
     "id": 1,
-    "name": "Kaos Simple Hitam",
-    "price": 75000,
-    "image": "images/kaos1.jpg"
+    "name": "Mie 1 bungkus",
+    "price": 3000,
+    "image": "images1.jpg"
   },
   {
     "id": 2,
-    "name": "Kaos Polos Putih",
-    "price": 65000,
-    "image": "images/kaos2.jpg"
+    "name": "Mie 2 bungkus",
+    "price": 5000,
+    "image": "images2.jpg"
   },
   {
     "id": 3,
-    "name": "Hoodie Oversize Abu",
-    "price": 120000,
-    "image": "images/hoodie.jpg"
+    "name": "mie 4 bungkus",
+    "price": 10000,
+    "image": "images3.jpg"
   }
 ]
