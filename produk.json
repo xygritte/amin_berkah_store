@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "Kaos Simple Hitam",
+    "price": 75000,
+    "image": "images/kaos1.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Kaos Polos Putih",
+    "price": 65000,
+    "image": "images/kaos2.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Hoodie Oversize Abu",
+    "price": 120000,
+    "image": "images/hoodie.jpg"
+  }
+]

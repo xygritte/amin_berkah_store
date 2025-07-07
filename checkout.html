@@ -6,21 +6,17 @@
   <title>Checkout - Simple Store</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
-  
   <header>
     <h1>Checkout</h1>
     <div>
       <a href="user.html" class="view-link">← Kembali ke Toko</a>
-      <button id="toggle-theme" style="font-size: 1.2rem; margin-left: 1rem;">🌓</button>
+      <button id="toggle-theme">🌓</button>
     </div>
   </header>
 
   <main>
     <h2>Daftar Belanja</h2>
-
-    <h3>Data Pemesan</h3>
     <div class="checkout-form">
       <input type="text" id="buyer-name" placeholder="Nama Anda" required />
       <textarea id="buyer-address" placeholder="Alamat Lengkap" required></textarea>
@@ -35,24 +31,18 @@
     <p>&copy; 2025 Simple Store</p>
   </footer>
 
-  <!-- Checkout Logic -->
   <script>
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const checkoutList = document.getElementById("checkout-list");
+    const totalHargaEl = document.getElementById("total-harga");
+    const checkoutBtn = document.getElementById("checkout-btn");
+
     function formatRupiah(angka) {
       return new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
         minimumFractionDigits: 0
       }).format(angka);
-    }
-
-    const checkoutList = document.getElementById("checkout-list");
-    const totalHargaEl = document.getElementById("total-harga");
-    const checkoutBtn = document.getElementById("checkout-btn");
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-    async function fetchProducts() {
-      const res = await fetch("get_products.php");
-      return await res.json();
     }
 
     async function renderCheckout() {
@@ -63,22 +53,19 @@
         return;
       }
 
-      const products = await fetchProducts();
+      const products = await fetch("produk.json").then(res => res.json());
       let total = 0;
 
       const listItems = cart.map(item => {
         const product = products.find(p => p.id == item.id);
-        if (!product) return `<div class="checkout-item" style="color:red;">Produk "${item.name}" tidak ditemukan.</div>`;
-
-        const price = parseFloat(product.price);
-        const subtotal = price * item.qty;
+        if (!product) return `<div class='checkout-item'>Produk tidak ditemukan</div>`;
+        const subtotal = product.price * item.qty;
         total += subtotal;
-
         return `
           <div class="checkout-item">
             <strong>${product.name}</strong>
             <p>Jumlah: ${item.qty}</p>
-            <p>Harga Satuan: ${formatRupiah(price)}</p>
+            <p>Harga Satuan: ${formatRupiah(product.price)}</p>
             <p>Subtotal: ${formatRupiah(subtotal)}</p>
           </div>
         `;
@@ -89,64 +76,44 @@
     }
 
     checkoutBtn.addEventListener("click", async () => {
-      if (cart.length === 0) return;
-
       const name = document.getElementById("buyer-name").value.trim();
       const address = document.getElementById("buyer-address").value.trim();
-
       if (!name || !address) {
-        alert("Harap isi nama dan alamat sebelum checkout.");
+        alert("Harap isi nama dan alamat.");
         return;
       }
 
-      const products = await fetchProducts();
+      const products = await fetch("produk.json").then(res => res.json());
       let total = 0;
       let message = `Halo Admin, saya ingin memesan:\n\n`;
-      const orderItems = [];
 
       cart.forEach(item => {
         const product = products.find(p => p.id == item.id);
         if (product) {
-          const price = parseFloat(product.price);
-          const subtotal = price * item.qty;
+          const subtotal = product.price * item.qty;
           total += subtotal;
-
           message += `- ${product.name} (${item.qty}x)\n`;
-          orderItems.push({
-            id: product.id,
-            name: product.name,
-            qty: item.qty,
-            price: product.price
-          });
         }
       });
 
       message += `\nTotal: ${formatRupiah(total)}\n\n`;
       message += `Nama: ${name}\nAlamat: ${address}\n\nTerima kasih.`;
 
-      const nomorAdmin = "6285858533923"; // Ganti nomor admin
+      const nomorAdmin = "6285858533923";
       const whatsappURL = `https://wa.me/${nomorAdmin}?text=${encodeURIComponent(message)}`;
-
       localStorage.removeItem("cart");
       window.open(whatsappURL, "_blank");
     });
 
     renderCheckout();
-  </script>
 
-  <!-- DARK MODE SCRIPT -->
-  <script>
-    const isDark = localStorage.getItem("theme") === "dark";
-    if (isDark) document.body.classList.add("dark");
-
-    const toggleBtn = document.getElementById("toggle-theme");
-    if (toggleBtn) {
-      toggleBtn.addEventListener("click", () => {
-        document.body.classList.toggle("dark");
-        const theme = document.body.classList.contains("dark") ? "dark" : "light";
-        localStorage.setItem("theme", theme);
-      });
-    }
+    // DARK MODE
+    if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
+    document.getElementById("toggle-theme").addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      const theme = document.body.classList.contains("dark") ? "dark" : "light";
+      localStorage.setItem("theme", theme);
+    });
   </script>
 </body>
 </html>
