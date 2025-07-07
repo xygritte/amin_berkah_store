@@ -84,7 +84,7 @@
       const res = await fetch("produk.json");
       const products = await res.json();
 
-      let message = `Halo Admin, saya ingin memesan:\n\n`;
+      let message = `Halo kak, saya ingin memesan:\n\n`;
       let total = 0;
 
       cart.forEach(item => {
@@ -96,10 +96,10 @@
         }
       });
 
-      message += `\nTotal: ${formatRupiah(total)}\n\nNama: ${name}\nAlamat: ${address}`;
+      message += `\nTotal: ${formatRupiah(total)}\n\nNama: ${name}\nAlamat: ${address}\n\nTerima kasih!😇🙏`;
 
       localStorage.removeItem("cart");
-      window.location.href = `https://wa.me/6285858533923?text=${encodeURIComponent(message)}`;
+      window.location.href = `https://wa.me/6282233073165?text=${encodeURIComponent(message)}`;
     });
 
     renderCheckout();
