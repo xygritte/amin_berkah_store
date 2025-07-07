@@ -49,45 +49,57 @@
         return;
       }
 
-      const products = await fetch("produk.json").then(res => res.json());
-      let total = 0;
-      const list = cart.map(item => {
-        const product = products.find(p => p.id === item.id);
-        if (!product) return '';
-        const subtotal = product.price * item.qty;
-        total += subtotal;
-        return `
-          <div class="checkout-item">
-            <strong>${product.name}</strong>
-            <p>Jumlah: ${item.qty}</p>
-            <p>Subtotal: ${formatRupiah(subtotal)}</p>
-          </div>
-        `;
-      });
-      checkoutList.innerHTML = list.join("");
-      totalHargaEl.textContent = `Total: ${formatRupiah(total)}`;
+      try {
+        const res = await fetch("produk.json");
+        const products = await res.json();
+        let total = 0;
+
+        const itemsHTML = cart.map(item => {
+          const product = products.find(p => p.id == item.id); // Gunakan == agar bisa cocok number dan string
+          if (!product) return `<div>Produk ID ${item.id} tidak ditemukan</div>`;
+          const subtotal = product.price * item.qty;
+          total += subtotal;
+          return `
+            <div class="checkout-item">
+              <strong>${product.name}</strong>
+              <p>Jumlah: ${item.qty}</p>
+              <p>Subtotal: ${formatRupiah(subtotal)}</p>
+            </div>
+          `;
+        });
+
+        checkoutList.innerHTML = itemsHTML.join("");
+        totalHargaEl.textContent = `Total: ${formatRupiah(total)}`;
+      } catch (err) {
+        checkoutList.innerHTML = "<p>Gagal memuat data produk.</p>";
+        console.error("Error fetching produk.json:", err);
+      }
     }
 
     document.getElementById("checkout-btn").addEventListener("click", async () => {
       const name = document.getElementById("buyer-name").value.trim();
       const address = document.getElementById("buyer-address").value.trim();
-      if (!name || !address) return alert("Lengkapi data terlebih dahulu.");
+      if (!name || !address) return alert("Harap lengkapi nama dan alamat.");
 
-      const products = await fetch("produk.json").then(res => res.json());
+      const res = await fetch("produk.json");
+      const products = await res.json();
+
       let message = `Halo Admin, saya ingin memesan:\n\n`;
       let total = 0;
+
       cart.forEach(item => {
-        const product = products.find(p => p.id === item.id);
+        const product = products.find(p => p.id == item.id);
         if (product) {
           const subtotal = product.price * item.qty;
           total += subtotal;
           message += `- ${product.name} (${item.qty}x)\n`;
         }
       });
-      message += `\nTotal: ${formatRupiah(total)}\n\nNama: ${name}\nAlamat: ${address}\n\nTerima kasih!😇🙏`;
+
+      message += `\nTotal: ${formatRupiah(total)}\n\nNama: ${name}\nAlamat: ${address}`;
 
       localStorage.removeItem("cart");
-      window.location.href = `https://wa.me/6282233073165?text=${encodeURIComponent(message)}`;
+      window.location.href = `https://wa.me/6285858533923?text=${encodeURIComponent(message)}`;
     });
 
     renderCheckout();
