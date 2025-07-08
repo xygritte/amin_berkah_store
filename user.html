@@ -11,15 +11,15 @@
     <h1>AMIN BERKAH Store</h1>
     <div>
       <a href="checkout.html" class="view-link">Checkout</a>
-      <span class="cart">🛒 <span id="cart-count">0</span></span>
-      <button id="toggle-theme">mode🌓</button>
+      <span class="cart">🛒<span id="cart-count">0</span></span>
+      <button onclick="resetCart()" style="margin-left:2rem; padding:0.45rem 0.5rem; background-color:#c0392b; color:white; border:none; border-radius:6px; cursor:pointer;">Reset Keranjang</button>
+      <button id="toggle-theme" style="margin-left: 10px;">🌓</button>
     </div>
   </header>
 
   <main>
     <h2>Produk Tersedia</h2>
     <div class="products" id="product-list"></div>
-    <button onclick="resetCart()" style="margin-top:2rem; padding:0.75rem 1.5rem; background-color:#c0392b; color:white; border:none; border-radius:6px; cursor:pointer;">Reset Keranjang</button>
   </main>
 
   <footer>
