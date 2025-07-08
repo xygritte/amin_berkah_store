@@ -61,6 +61,7 @@
           total += subtotal;
           return `
             <div class="checkout-item">
+              <img src="${product.image}" alt="${product.name}" style="width:40%;" />
               <strong>${product.name}</strong>
               <p>Jumlah: ${item.qty}</p>
               <p>Subtotal: ${formatRupiah(subtotal)}</p>
