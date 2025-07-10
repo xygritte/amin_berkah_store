@@ -216,6 +216,19 @@ footer {
   font-size: 0.9rem;
 }
 
+/* === Payment Options === */
+.payment-options {
+  color: #2c2c2c;
+}
+
+/* === option === */
+.payment-options{
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 0.1rem 3rem;
+}
+
 /* === DARK MODE === */
 body.dark {
   background: #1e1e1e;
@@ -274,6 +287,18 @@ body.dark .reset-cart-btn {
 body.dark #checkout-btn:hover,
 body.dark .reset-cart-btn:hover {
   background-color: #666;
+}
+
+body.dark .payment-options {
+  background-color: #2c2c2c;
+}
+
+body.dark .payment-options label {
+  color: #eee;
+}
+
+body.dark .payment-options input[type="radio"] {
+  accent-color: #87cefa;
 }
 
 /* === Responsive === */

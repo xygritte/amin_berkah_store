@@ -14,7 +14,6 @@
       <button id="toggle-theme">🌓</button>
     </div>
   </header>
-
   <main>
     <div class="checkout-identity" style="color: #fff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
       <h2>Checkout List✨</h2>
@@ -22,6 +21,17 @@
         <input type="text" id="buyer-name" placeholder="Nama" required />
         <textarea id="buyer-address" placeholder="Posisi" required></textarea>
     </div>
+    <div class="payment-options">
+      <div class="payment-option-row">
+        <input type="radio" id="pay-cash" name="payment-method" value="Cash" required />
+        <label for="pay-cash">Cash</label>
+      </div>
+      <div class="payment-option-row">
+        <input type="radio" id="pay-qris" name="payment-method" value="QRIS" required />
+        <label for="pay-qris">QRIS</label>
+      </div>
+    </div>
+
     </div>
     <div id="checkout-list"></div>
     <div id="total-harga" class="checkout-summary"></div>
@@ -57,7 +67,7 @@
         let total = 0;
 
         const itemsHTML = cart.map(item => {
-          const product = products.find(p => p.id == item.id); // Gunakan == agar bisa cocok number dan string
+          const product = products.find(p => p.id == item.id);
           if (!product) return `<div>Produk ID ${item.id} tidak ditemukan</div>`;
           const subtotal = product.price * item.qty;
           total += subtotal;
@@ -80,38 +90,43 @@
     }
 
     document.getElementById("checkout-btn").addEventListener("click", async () => {
-    const name = document.getElementById("buyer-name").value.trim();
-    const address = document.getElementById("buyer-address").value.trim();
-    if (!name || !address) return alert("Harap lengkapi nama dan alamat.");
+      const name = document.getElementById("buyer-name").value.trim();
+      const address = document.getElementById("buyer-address").value.trim();
+      const paymentMethod = document.querySelector('input[name="payment-method"]:checked');
 
-    const res = await fetch("produk.json");
-    const products = await res.json();
-
-    let message = `Halo kak, saya ingin memesan:\n\n`;
-    let total = 0;
-
-    cart.forEach(item => {
-      const product = products.find(p => p.id == item.id);
-      if (product) {
-        const subtotal = product.price * item.qty;
-        total += subtotal;
-        message += `- ${product.name} (${item.qty}x)\n`;
+      if (!name || !address || !paymentMethod) {
+        alert("Harap lengkapi nama, posisi, dan metode pembayaran.");
+        return;
       }
+
+      const res = await fetch("produk.json");
+      const products = await res.json();
+
+      let message = `Halo kak, saya ingin memesan:\n\n`;
+      let total = 0;
+
+      cart.forEach(item => {
+        const product = products.find(p => p.id == item.id);
+        if (product) {
+          const subtotal = product.price * item.qty;
+          total += subtotal;
+          message += `- ${product.name} (${item.qty}x)\n`;
+        }
+      });
+
+      message += `\nTotal: ${formatRupiah(total)}\n\nNama: ${name}\nPosisi: ${address}\nPembayaran: ${paymentMethod.value}\n\nTerima kasih!😇🙏`;
+
+      window.open(`https://wa.me/6282233073165?text=${encodeURIComponent(message)}`, '_blank');
+
+      localStorage.removeItem("cart");
     });
-
-    message += `\nTotal: ${formatRupiah(total)}\n\nNama: ${name}\nPosisi: ${address}\n\nTerima kasih!😇🙏`;
-
-    console.log("message:", message); // Debug
-
-    // Gunakan window.open agar tidak diblok
-    window.open(`https://wa.me/6282233073165?text=${encodeURIComponent(message)}`, '_blank');
-
-    localStorage.removeItem("cart");
-  });
 
     renderCheckout();
 
-    if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark");
+    }
+
     document.getElementById("toggle-theme").addEventListener("click", () => {
       document.body.classList.toggle("dark");
       const theme = document.body.classList.contains("dark") ? "dark" : "light";
